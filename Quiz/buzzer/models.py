@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 
-class Time(models.Model):
-  time = models.IntegerField(max_length=255)
+class Record(models.Model):
   name = models.CharField(max_length=255)
+  mail = models.CharField(max_length=255)
+  time = models.FloatField()
