@@ -1,5 +1,6 @@
 pip install pipreqs
 pipreqs . --force
+
 Django==5.1.*
 gunicorn==22.0.*
 psycopg2-binary==2.9.*
