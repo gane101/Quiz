@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-j0kl%f*2mm9x%qaknfm61y63($iy!5_#kgylgh7pv5$h-x&=r*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.onrender.com', 'quiz-3epe.onrender.com','*']
 
 
 # Application definition
