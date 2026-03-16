@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head> 
+
+<script>
+document.onclick = function(){
+	send();
+};
+
+var formData;
+
+function getname(){
+	var form = document.getElementById("data");
+	// var submitter = document.querySelector("submit[value=Submit]");
+	formData = new FormData(form);
+	var recs = []
+	for (const pair of formData.entries()) {
+	  recs.push(pair[1]);
+	}
+	recs.push(Date.now()/1000)
+
+	form.remove();
+
+	dom = document.getElementById('name')
+	dom.innerHTML = recs[0]
+
+	send();
+}
+
+function send(){
+	var name = formData.entries()
+	// console.log(name);
+	var recs = []
+	for (const pair of formData.entries()) {
+	  recs.push(pair[1]);
+	}
+	recs.push(Date.now()/1000)
+	// console.log(recs)
+
+	var data = {"Name":recs[0] , "Mail":recs[1] , "Time":recs[2]}
+
+	fetch("http://localhost:8000/send/", { method: 'POST',
+		headers: {"Content-Type": "application/json"},
+	    mode: 'no-cors',
+	    body: JSON.stringify(data)
+	})
+    .then(response => {
+    	// alert('Success!');
+        console.log(recs[2]);
+        // form.reset();
+    })
+    .catch(error => {
+        alert('Error!');
+    });
+
+}
+
+
+</script>
+</head>
+
+<body>
+
+<h1>Welcome to the Tech Quiz</h1>
+<p>Enter the following information</p>
+
+<p id="name"></p>
+
+<form id = "data">
+Name : <input type="text" name="name">
+<br>
+E-Mail : <input type="text" name="email">
+<br>
+<input type="submit" value="Submit" onclick="getname()">
+
+</form>
+
+<button onclick="send()"> See </button>
+
+</body>
+</html>

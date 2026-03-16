@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Leaderboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #f5f3ee;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+      color: #1a1a18;
+    }
+
+    .lb-wrap {
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .lb-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .lb-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: #FAC775;
+      color: #633806;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .lb-title {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #1a1a18;
+      line-height: 1.1;
+    }
+
+    .lb-subtitle {
+      font-size: 14px;
+      color: #888780;
+      margin-top: 6px;
+    }
+
+    /* Podium */
+    .podium {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 2rem;
+    }
+
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .podium-avatar {
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .podium-avatar.first {
+      width: 68px; height: 68px; font-size: 24px;
+      background: #FAC775; color: #633806;
+      border: 3px solid #EF9F27;
+    }
+
+    .podium-avatar.second,
+    .podium-avatar.third {
+      width: 52px; height: 52px; font-size: 18px;
+      background: #e8e6e0; color: #5F5E5A;
+      border: 2px solid #ccc;
+    }
+
+    .podium-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a1a18;
+      text-align: center;
+      max-width: 80px;
+    }
+
+    .podium-score {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: #888780;
+    }
+
+    .podium-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px 8px 0 0;
+      width: 88px;
+      font-weight: 800;
+    }
+
+    .podium-block.first  { height: 88px; background: #FAC775; font-size: 30px; color: #633806; }
+    .podium-block.second { height: 62px; background: #e8e6e0; font-size: 22px; color: #888780; }
+    .podium-block.third  { height: 46px; background: #e8e6e0; font-size: 20px; color: #B4B2A9; }
+
+    /* Stats */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 0.5px solid #d3d1c7;
+      padding: 12px 16px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #888780;
+      margin-bottom: 2px;
+    }
+
+    .stat-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: #1a1a18;
+    }
+
+    /* Controls */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      padding: 7px 14px;
+      border: 0.5px solid #B4B2A9;
+      border-radius: 20px;
+      background: #fff;
+      color: #1a1a18;
+      outline: none;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .search-box:focus { border-color: #888780; }
+
+    .filter-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 0.5px solid #B4B2A9;
+      background: transparent;
+      color: #888780;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-btn.active {
+      background: #1a1a18;
+      color: #f5f3ee;
+      border-color: #1a1a18;
+    }
+
+    .filter-btn:hover:not(.active) {
+      background: #e8e6e0;
+      color: #1a1a18;
+    }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border: 0.5px solid #d3d1c7;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .lb-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 90px 60px;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 18px;
+      border-bottom: 0.5px solid #e8e6e0;
+      transition: background 0.15s;
+    }
+
+    .lb-row:last-child { border-bottom: none; }
+    .lb-row:hover { background: #f5f3ee; }
+    .lb-row.top3 { background: #FAEEDA; }
+    .lb-row.top3:hover { background: #FAC775; }
+
+    .rank {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: #888780;
+      text-align: center;
+    }
+
+    .rank.gold   { font-size: 20px; }
+    .rank.silver { font-size: 18px; }
+    .rank.bronze { font-size: 16px; }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar-sm {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #e8e6e0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      border: 0.5px solid #d3d1c7;
+      color: #5F5E5A;
+      flex-shrink: 0;
+    }
+
+    .player-name { font-size: 14px; font-weight: 600; color: #1a1a18; }
+    .player-tag  { font-size: 11px; color: #888780; }
+
+    .bar-wrap { width: 90px; }
+    .bar-bg   { height: 6px; background: #e8e6e0; border-radius: 3px; overflow: hidden; }
+    .bar-fill {
+      height: 6px;
+      border-radius: 3px;
+      background: #EF9F27;
+      width: 0%;
+      transition: width 0.9s cubic-bezier(.4,0,.2,1);
+    }
+    .bar-fill.mid { background: #B4B2A9; }
+
+    .score-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a1a18;
+      text-align: right;
+    }
+
+    .empty-msg {
+      text-align: center;
+      padding: 2rem;
+      color: #888780;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .lb-row { grid-template-columns: 36px 1fr 60px; }
+      .bar-wrap { display: none; }
+      .podium-block.first  { height: 72px; width: 74px; }
+      .podium-block.second { height: 52px; width: 74px; }
+      .podium-block.third  { height: 38px; width: 74px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="lb-wrap">
+  <div class="lb-header">
+    <div class="lb-badge">Live Scores</div>
+    <div class="lb-title">Leaderboard</div>
+    <div class="lb-subtitle">Tech Quiz</div>
+  </div>
+
+  <!-- <div class="podium" id="podium"></div> -->
+
+  <div class="stats-bar" id="stats-bar"></div>
+
+  <div class="filter-row">
+    <!-- <input class="search-box" id="search" placeholder="Search player..." oninput="render()" /> -->
+    <button class="filter-btn active" onclick="reset()">Clear</button>
+    <!-- <button class="filter-btn" onclick="setFilter('top5', this)">Top 5</button> -->
+    <!-- <button class="filter-btn" onclick="setFilter('top10', this)">Top 10</button> -->
+  </div>
+
+  <div class="table-wrap" id="table"></div>
+</div>
+
+<script>
+
+    function reset(){
+        fetch("http://localhost:8000/clear/")
+    }
+
+
+    async function fetchData() {
+        var response = await fetch("http://localhost:8000/list/")
+        data = await response.json();
+        data = JSON.parse(data)
+        // player = Object.entries(player).sort((a,b) => b[1]-a[1]);
+        // data = {"Player1": 980, "Player2": 940};
+        players = Object.entries(data).sort((a,b) => b[1]-a[1]).map(([name, score]) => ({ name, score }));
+        console.log(players);
+        render();
+    }
+
+    setInterval(fetchData, 1000);
+
+    fetchData();
+
+  let filter = 'all';
+
+  const initials = name => name.split(' ').map(w => w[0]).join('').toUpperCase();
+
+  render();
+
+  function setFilter(f, btn) {
+    filter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  function render() {
+    // const query = document.getElementById('search').value.toLowerCase();
+    // let data = players.filter(p => p.name.toLowerCase().includes(query));
+    let data = players
+
+    const max = players[0].score;
+
+    if (data.length === 0) {
+      document.getElementById('table').innerHTML = `<div class="empty-msg">No players found.</div>`;
+      return;
+    }
+
+    document.getElementById('table').innerHTML = data.map(p => {
+      const rank = players.indexOf(p) + 1;
+      const pct  = Math.round((p.score / max) * 100);
+      let rankEl;
+      rankEl = `<span class="rank">${rank}</span>`;
+
+      return `<div class="lb-row ${rank <= 2 ? 'top2' : ''}">
+        ${rankEl}
+        <div class="player-info">
+          <div class="avatar-sm">${initials(p.name)}</div>
+          <div>
+            <div class="player-name">${p.name}</div>
+          </div>
+        </div>
+        <div class="score-val">${p.score}</div>
+      </div>`;
+    }).join('');
+
+    // setTimeout(() => {
+      // document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w);
+    // }, 60);
+  }
+
+  render();
+</script>
+</body>
+</html>

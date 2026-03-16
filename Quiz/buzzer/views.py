@@ -13,17 +13,27 @@ def page(request):
 
 def show(request):
 	response = models.Record.objects.all()
-	print(models.Record.objects.all()[1].time)
-	data = list(models.Record.objects.values('name', 'time').order_by('time'))
-	return JsonResponse(data, safe=False)
+	data = models.Record.objects.order_by('time').values()
+	kv_name = [d['name'] for d in data]
+	kv_time = [d['time'] for d in data]
+	res = dict(zip(kv_name,kv_time))
+	return JsonResponse(json.dumps(res), safe=False)
 
 @csrf_exempt
 def send(request):
 	body = json.loads(request.body)
-	print(body)
 
 	if models.Record.objects.filter(name=body["Name"], mail=body["Mail"]).exists():
 		models.Record.objects.filter(name=body["Name"], mail=body["Mail"]).update(time=body["Time"])
 	else:
 	    models.Record.objects.create(name=body["Name"], mail=body["Mail"], time=body["Time"])
 	return HttpResponse("request")
+
+def reset(request):
+	models.Record.objects.all().update(time=0)
+	return HttpResponse("Clear")
+
+def leaderboard(request):
+	template = loader.get_template('leaderboard.html')
+	return HttpResponse(template.render())
+
