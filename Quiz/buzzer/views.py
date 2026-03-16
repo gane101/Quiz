@@ -9,8 +9,8 @@ from django.http import JsonResponse
 @csrf_exempt
 def page(request):
 	template = loader.get_template('buzzer.html')
-    context = {'key': 'value'}  # Your API data
-    return HttpResponse(template.render(context, request))
+	context = {'key': 'value'}
+	return HttpResponse(template.render(context, request))
 
 def show(request):
 	response = models.Record.objects.all()
