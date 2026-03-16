@@ -269,7 +269,7 @@
 
     var data = {"Name":recs[0] , "Mail":recs[1] , "Time":recs[2]}
 
-    fetch("http://localhost:8000/send/", { method: 'POST',
+    fetch("https://quiz-3epe.onrender.com/send/", { method: 'POST',
       headers: {"Content-Type": "application/json"},
         mode: 'no-cors',
         body: JSON.stringify(data)

@@ -312,12 +312,12 @@
 <script>
 
     function reset(){
-        fetch("http://localhost:8000/clear/")
+        fetch("https://quiz-3epe.onrender.com/clear/")
     }
 
 
     async function fetchData() {
-        var response = await fetch("http://localhost:8000/list/")
+        var response = await fetch("https://quiz-3epe.onrender.com/list/")
         data = await response.json();
         data = JSON.parse(data)
         // player = Object.entries(player).sort((a,b) => b[1]-a[1]);
