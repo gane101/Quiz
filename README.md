@@ -5,4 +5,7 @@ Participants press the buzzer in the website to register their response and the 
 There is also a leader board for showcasing who pressed the button when.
 
 Here is the buzzer: https://quiz-3epe.onrender.com/buzzer/
+
 And the leaderboard: https://quiz-3epe.onrender.com/leaderboard/
+
+It may take few minutes to load the website first time.
